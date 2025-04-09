@@ -1,63 +1,62 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f4f4f4;
-}
+let selectedType = null;
+let cropper = null;
 
-.container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 400px;
-  margin: auto;
-}
+document.getElementById('uploadImage').addEventListener('click', () => {
+  selectedType = 'photo';
+  document.getElementById('imageInput').click();
+});
 
-.title-box {
-  font-size: 22px;
-  font-weight: bold;
-  background: yellow;
-  padding: 10px;
-  border-radius: 10px;
-  display: inline-block;
-}
+document.getElementById('uploadSignature').addEventListener('click', () => {
+  selectedType = 'signature';
+  document.getElementById('imageInput').click();
+});
 
-.hidden {
-  display: none;
-}
+document.getElementById('imageInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-#processingScreen, #cropperModal {
-  font-size: 18px;
-  font-weight: bold;
-  color: #ff6600;
-  margin-top: 20px;
-}
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById('cropImage').src = reader.result;
+    document.getElementById('cropperModal').classList.remove('hidden');
 
-.output img {
-  max-width: 100%;
-  margin-top: 10px;
-  border: 2px solid #333;
-}
+    if (cropper) cropper.destroy();
+    const image = document.getElementById('cropImage');
+    cropper = new Cropper(image, {
+      aspectRatio: selectedType === 'photo' ? 3.8 / 4.5 : NaN,
+      viewMode: 1
+    });
+  };
+  reader.readAsDataURL(file);
+});
 
-#downloadLink {
-  display: inline-block;
-  background: #ff6600;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  text-decoration: none;
-  margin-top: 10px;
-  animation: flash 1s infinite;
-}
+document.getElementById('cropOk').addEventListener('click', async () => {
+  document.getElementById('cropperModal').classList.add('hidden');
+  document.getElementById('processingScreen').classList.remove('hidden');
 
-@keyframes flash {
-  50% { opacity: 0.5; }
-}
+  const canvas = cropper.getCroppedCanvas({
+    width: selectedType === 'photo' ? 413 : 400,
+    height: selectedType === 'photo' ? 531 : 200
+  });
 
-#notification {
-  font-size: 16px;
-  font-weight: bold;
-  color: green;
-  margin-top: 20px;
-}
+  // Convert to blob and compress
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+  const compressedBlob = await imageCompression(blob, {
+    maxSizeMB: 0.1,
+    maxWidthOrHeight: 600,
+    useWebWorker: true
+  });
+
+  const outputUrl = URL.createObjectURL(compressedBlob);
+  document.getElementById('outputImage').src = outputUrl;
+  document.getElementById('outputImage').classList.remove('hidden');
+  document.getElementById('downloadLink').href = outputUrl;
+  document.getElementById('downloadLink').classList.remove('hidden');
+
+  document.getElementById('processingScreen').classList.add('hidden');
+  document.querySelector('.output').classList.remove('hidden');
+  document.getElementById('notification').classList.remove('hidden');
+
+  setTimeout(() => {
+    document.getElementById('notification').classList.add('hidden');
+ 
