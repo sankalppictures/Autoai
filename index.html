@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Helper</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title-box">Student Helper</h1>
+
+    <!-- Select File Type Dialog -->
+    <div class="file-type-selection">
+      <p>आप क्या अपलोड कर रहे हैं?</p>
+      <button id="uploadImage">🖼️ फोटो</button>
+      <button id="uploadSignature">✍️ सिग्नेचर</button>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="imageInput" accept="image/*" hidden>
+
+    <!-- Cropper Modal -->
+    <div id="cropperModal" class="hidden">
+      <h2>क्रॉप करें</h2>
+      <div class="image-container">
+        <img id="cropImage" src="" alt="Crop Image">
+      </div>
+      <button id="cropOk">✅ OK</button>
+    </div>
+
+    <!-- Processing Screen -->
+    <div id="processingScreen" class="hidden">
+      <p>कृपया प्रतीक्षा करें... प्रोसेस हो रहा है</p>
+    </div>
+
+    <!-- Output Section -->
+    <div class="output hidden">
+      <h2>प्रोसेस्ड इमेज</h2>
+      <img id="outputImage" src="" alt="Edited Image">
+      <a id="downloadLink" download="processed-image.png" class="hidden">⬇️ डाउनलोड</a>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="hidden">✅ आपका फोटो या सिग्नेचर गैलरी में सेव हो गया है!</div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@1.0.16/dist/browser-image-compression.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
